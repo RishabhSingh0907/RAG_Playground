@@ -1,0 +1,24 @@
+[theme]
+primaryColor = "#00D9FF"
+backgroundColor = "#0E1117"
+secondaryBackgroundColor = "#161B22"
+textColor = "#C9D1D9"
+font = "sans serif"
+
+[client]
+showErrorDetails = true
+showSidebarNavigation = true
+toolbarMode = "viewer"
+
+[logger]
+level = "info"
+
+[server]
+port = 8501
+headless = true
+runOnSave = true
+maxUploadSize = 200
+
+[browser]
+gatherUsageStats = false
+
