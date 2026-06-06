@@ -479,33 +479,6 @@ generation:
     max_tokens: 1024
 ```
 
-## UI Layout Notes
-
-The current UI is tuned for a dashboard/workbench workflow.
-
-### Sidebar Configuration Viewer
-
-The sidebar is an independent scrollable panel. It shows:
-
-- Chunking configuration
-- Database statistics
-- Embedding configuration
-- Vector database status
-- Vector database diagnostics
-
-<!-- ### Sticky Tab Navigation
-
-The seven-tab navigation is styled to remain accessible while tab content scrolls. This reduces the need to scroll back to the top just to switch workflows.
-
-### Independent Chat Panes
-
-The Chat Playground uses two independent scroll regions:
-
-- Conversation history
-- Generation settings
-
-This is intended to make prompt tuning and response inspection easier during iterative testing. -->
-
 ## Data Flow
 
 ```text
@@ -522,58 +495,6 @@ Uploaded file
     -> Ollama LLM Provider
     -> Chat response
     -> RAG evaluation
-```
-
-## Directory Reference
-
-```text
-src/
-  config/       YAML configuration files
-  embedding/    Embedding provider management
-  generation/   Chat, prompt, citation, and LLM provider logic
-  ingestion/    Parsing, chunking, and ingestion orchestration
-  monitoring/   RAG response evaluation
-  retrieval/    Retrieval pipeline and reranking
-  storage/      SQLite chunk persistence
-  ui/           Streamlit support utilities
-  utils/        Logging and shared helpers
-  vector_db/    ChromaDB and FAISS implementations
-
-data/
-  raw/          Input documents
-  processed/    Processed artifacts
-  chunks.db     SQLite chunk database
-  chroma/       ChromaDB persistence
-  faiss_index   FAISS persistence
-
-logs/
-  ingestion.log Structured application logs
-```
-
-## Database Management
-
-### Inspect SQLite Chunks
-
-```bash
-sqlite3 ./data/chunks.db
-```
-
-Example queries:
-
-```sql
-SELECT chunk_id, document_id, LENGTH(content) AS content_length
-FROM document_chunks
-LIMIT 10;
-
-SELECT COUNT(*) AS total_chunks,
-       COUNT(DISTINCT document_id) AS unique_documents
-FROM document_chunks;
-```
-
-### Backup SQLite Database
-
-```bash
-copy .\data\chunks.db .\data\chunks.db.backup
 ```
 
 On macOS/Linux:
@@ -761,14 +682,6 @@ Add the implementation in `src/ingestion/chunking_strategies.py`, extend the rel
 ### Adding a Vector Backend
 
 Add a backend implementation under `src/vector_db/` and register it through `VectorDatabaseFactory`.
-
-## Related Documentation
-
-- `PRD.md`
-- `COMPONENT_1_README.md`
-- `IMPLEMENTATION_SUMMARY.md`
-- `CHUNKING_STRATEGIES.md`, if present
-- `tests/`
 
 ## Current Run Command
 
