@@ -1,0 +1,184 @@
+# Ingestion Configuration
+# Controls behavior of the data ingestion pipeline
+
+ingestion:
+  # Input paths and file handling
+  input_path: "./data/raw"  # Directory containing source files
+  output_path: "./data/processed"  # Directory for processed outputs
+  
+  # Supported file types
+  supported_formats:
+    - pdf
+    - docx
+    - txt
+    - csv
+    - ppt
+  
+  # File size limits (in MB)
+  max_file_size: 100
+  
+  # Parsing strategy
+  parsing:
+    # OCR for images in PDFs
+    enable_ocr: true
+    # Preserve layout information
+    preserve_layout: true
+    # Extract tables separately
+    extract_tables: true
+    # Extract metadata (author, creation date, etc.)
+    extract_metadata: true
+  
+  # Chunking strategy
+  chunking:
+    # Framework choice: langchain or llamaindex
+    framework: "langchain"  # Options: langchain, llamaindex
+    
+    # LangChain configuration
+    langchain:
+      # Method: recursive_character, character, token, markdown_header
+      method: "recursive_character"
+      
+      # RecursiveCharacterTextSplitter - Recommended for most use cases
+      recursive_character:
+        chunk_size: 512  # Max characters per chunk
+        chunk_overlap: 50  # Character overlap between chunks
+        separators:
+          - "\n\n"
+          - "\n"
+          - " "
+          - ""
+        is_separator_regex: false
+        keep_separator: true
+      
+      # CharacterTextSplitter - Simple character-based splitting
+      character:
+        chunk_size: 512
+        chunk_overlap: 50
+        separator: "\n\n"
+        is_separator_regex: false
+        keep_separator: true
+      
+      # TokenTextSplitter - Token-aware splitting (requires tiktoken)
+      token:
+        chunk_size: 512  # Max tokens per chunk
+        chunk_overlap: 50  # Token overlap
+        encoding_name: "cl100k_base"  # Options: cl100k_base, o200k_base
+      
+      # MarkdownHeaderTextSplitter - Preserves markdown structure
+      markdown_header:
+        chunk_size: 512
+        chunk_overlap: 50
+        headers_to_split_on:
+          - ["#", "Header 1"]
+          - ["##", "Header 2"]
+          - ["###", "Header 3"]
+    
+    # LlamaIndex configuration
+    llamaindex:
+      # Method: sentence_splitter, semantic_splitter, code_splitter, sentence_window, token_text_splitter
+      method: "sentence_splitter"
+      
+      # SentenceSplitter - Simple sentence-based splitting (token-aware)
+      sentence_splitter:
+        chunk_size: 512
+        chunk_overlap: 20
+        separator: " "
+        paragraph_separator: "\n\n"
+        secondary_chunking_regex: null
+      
+      # TokenTextSplitter - Token-aware (similar to LangChain)
+      token_text_splitter:
+        chunk_size: 512
+        chunk_overlap: 50
+        separator: " "
+      
+      # SemanticSplitterNodeParser - Uses embeddings for semantic boundaries
+      # Requires embedding model (Ollama recommended for local execution)
+      semantic_splitter:
+        chunk_size: 512
+        chunk_overlap: 50
+        breakpoint_percentile_threshold: 95  # Higher = fewer breaks (0-100)
+        embedding_model:
+          provider: "ollama"  # Options: ollama, huggingface, openai
+          model: "nomic-embed-text"  # Options: nomic-embed-text, mxbai-embed-large, snowflake-arctic-embed
+          base_url: "http://localhost:11434"  # Ollama service URL
+          embed_batch_size: 10  # Batch size for embedding computation
+      
+      # SentenceWindowNodeParser - Creates sentence windows with context
+      sentence_window:
+        window_size: 3  # Number of sentences around each sentence
+        window_metadata_key: "window"
+        original_text_metadata_key: "original_text"
+      
+      # CodeSplitterNodeParser - For code documents
+      code_splitter:
+        chunk_size: 512
+        chunk_overlap: 50
+        language: "python"  # Options: python, javascript, java, cpp, go, etc.
+
+# Storage configuration
+storage:
+  # SQLite database for chunk storage
+  sqlite:
+    db_path: "./data/chunks.db"
+    table_name: "document_chunks"
+  
+  # Vector database configuration (independent embedding model for retrieval)
+  vector_db:
+    # Enable/disable vector database usage
+    enabled: true
+    
+    # Vector database type: faiss or chroma
+    type: "chroma"  # Options: faiss, chroma
+    
+    # Embedding configuration for vector database
+    # Note: This is INDEPENDENT from any embedding used during chunking (semantic splitting)
+    embedding:
+      provider: "ollama"  # Options: ollama, huggingface, openai
+      model: "nomic-embed-text"  # Options: nomic-embed-text, mxbai-embed-large, snowflake-arctic-embed
+      base_url: "http://localhost:11434"
+      embed_batch_size: 10
+    
+    # FAISS configuration (when type: faiss)
+    faiss:
+      # Index type: flat, ivfpq, hnsw
+      # flat: Brute-force L2 search (simple, accurate, slower on large datasets)
+      # ivfpq: Inverted File + Product Quantization (fast, memory-efficient)
+      # hnsw: Hierarchical Navigable Small World graphs (fast, approximate)
+      index_type: "flat"
+      
+      # Distance metric: l2, inner_product
+      distance_metric: "l2"
+      
+      # Path to persist FAISS index
+      persist_path: "./data/faiss_index"
+    
+    # ChromaDB configuration (when type: chroma)
+    chroma:
+      # Collection name for ChromaDB
+      collection_name: "documents"
+      
+      # Persistence directory for ChromaDB
+      persist_directory: "./data/chroma"
+
+# Logging configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "json"  # json or text
+  log_file: "./logs/ingestion.log"
+  max_file_size: 10485760  # 10 MB
+  backup_count: 5
+
+# Error handling
+error_handling:
+  # Retry strategy for API calls
+  retry:
+    max_attempts: 3
+    backoff_factor: 2  # Exponential backoff multiplier
+    initial_delay: 1  # Seconds
+  
+  # How to handle parse failures
+  on_parse_error: "log_and_skip"  # Options: fail, log_and_skip, log_and_continue
+  
+  # How to handle unsupported formats
+  on_unsupported_format: "skip"  # Options: fail, skip

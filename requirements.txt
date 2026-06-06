@@ -1,0 +1,28 @@
+streamlit>=1.35.0
+pydantic>=2.0.0
+pyyaml>=6.0
+pandas>=2.0.0
+pyarrow>=12.0.0
+requests>=2.31.0
+
+# Parsing dependencies
+PyMuPDF>=1.23.0
+langchain-docling>=0.1.0
+python-docx>=0.8.11
+python-pptx>=0.6.21
+
+# Vector Database & Embedding dependencies
+langchain>=0.1.0
+chromadb>=0.4.0
+faiss-cpu>=1.7.4
+numpy>=1.24.0
+
+# Optional reranker backends (V2)
+sentence-transformers>=3.0.0
+flashrank>=0.2.10
+onnxruntime>=1.18.0
+tokenizers>=0.15.0
+
+# Development/Testing
+pytest>=7.4
+pytest-cov>=4.1.0

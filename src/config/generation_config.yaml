@@ -1,0 +1,22 @@
+generation:
+  llm_provider: "ollama"
+  
+  ollama:
+    base_url: "http://localhost:11434"
+    model: "mistral"
+    temperature: 0.7
+    max_tokens: 1024
+    top_p: 0.9
+    top_k: 40
+    request_timeout_seconds: 120
+    max_retries: 3
+    retry_delay_seconds: 1.0
+
+  prompt:
+    include_scores: true
+    include_ranks: true
+    max_context_chars: 8000  # Max context length to include
+
+  citations:
+    auto_detect: true
+    min_confidence: 0.5  # For future use with more sophisticated extraction

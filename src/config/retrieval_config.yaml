@@ -1,0 +1,21 @@
+retrieval:
+  search_mode: "dense"
+  top_k: 10
+  semantic_candidate_k: 25
+  lexical_candidate_k: 25
+  session_only: true
+
+  reranker:
+    enabled: false
+    backend: "sentence_transformer"  # Options: "heuristic", "sentence_transformer", "flashrank"
+    model: "BAAI/bge-reranker-large"
+    device: null  # Options: null (auto), "cpu", "cuda"
+    preload_timeout_seconds: 60
+    auto_fallback_on_error: true
+
+  flashrank:
+    model: "ms-marco-MiniLM-L-12-v2"
+    cache_dir: "./data/flashrank"
+
+  hybrid:
+    fusion_k: 60
