@@ -1,0 +1,16 @@
+.github
+.vscode/
+.pytest_cache/
+__pycache__/
+./temp_uploads
+instruction.md
+CHUNKING_STRATEGIES.md
+COMPONENT_1_README.md
+IMPLEMENTATION_SUMMARY.md
+PRD.md
+QUICKSTART.md
+QUICK_REFERENCE.md
+TODo.md
+VERIFICATION_REPORT.md
+agent.md
+temp_uploads/
